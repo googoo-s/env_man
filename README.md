@@ -32,15 +32,20 @@
 * [vagrant cloud](https://app.vagrantup.com/boxes/search)
 
 
-
+## 国内使用
+[Vagrant使用国内镜像安装插件和box镜像](https://cloud.tencent.com/developer/article/1658648)
 
 ## 常用命令
+
 ```
 vagrant init  # 初始化
 vagrant up  # 启动虚拟机
 vagrant halt  # 关闭虚拟机
 vagrant reload  # 重启虚拟机
+vagrant suspend # 暂停虚拟机
+vagrand resume # 恢复暂停的虚拟机
 vagrant ssh  # SSH 至虚拟机
+vagrand ssh-config # SSH cfg
 vagrant status  # 查看虚拟机运行状态
 vagrant destroy  # 销毁当前虚拟机
 ```

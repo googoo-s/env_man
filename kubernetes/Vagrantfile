@@ -1,0 +1,111 @@
+# Vagrant 2.3.4
+# VirtualBox 6.1.40
+# ubuntu 22.04 Jammy
+$vm_box         = "ubuntu/jammy64"
+$vm_box_url     = "https://mirrors.tuna.tsinghua.edu.cn/ubuntu-cloud-images/jammy/current/jammy-server-cloudimg-amd64-vagrant.box"
+
+# kubernetes版本号
+# 支持 v1.24.0 或更高版本，其他版本未经测试
+$kube_version   = "1.26.0"
+
+# 使用 VBoxManage list hostonlyifs 命令查看分配给虚拟机的网段
+# ip地址从192.168.56.100的开始递增
+$ip_range       = "192.168.56."
+$ip_start       = 100
+$master_ip      = $ip_range + "#{$ip_start}"
+
+# master配置
+$master_cpus    = 2
+$master_memory  = 4096
+
+# worker配置 
+$worker_count   = 2
+$worker_cpus    = 2
+$worker_memory  = 4096
+
+# k8s令牌
+$k8s_token      = "123456.0123456789abcdef"
+$net_iface      = "enp0s8"
+
+# hostname
+$master_host    = "k8s-master"
+$worker_host    = "k8s-worker"
+
+# pod使用的网段
+$pod_subnet     = "172.10.0.0/16"
+
+# 虚拟机配置
+Vagrant.configure("2") do |config|
+
+  # 通用配置
+  config.vm.boot_timeout = 2000000000000
+  config.vm.box = $vm_box
+  config.vm.box_url = $vm_box_url
+  config.ssh.insert_key = false
+
+  # 通用初始化脚本
+  config.vm.provision "shell" do |script|
+    script.path = "bootstrap.sh"
+    script.args = [ $kube_version ]
+  end
+
+  # 显卡控制器使用VMSVGA
+  config.vm.provider :virtualbox do |vbox|
+    vbox.customize ['modifyvm', :id, '--graphicscontroller', 'vmsvga']
+  end
+
+  # ===== 主节点配置 =====
+  config.vm.define $master_host do |master|
+
+    master.vm.hostname = $master_host
+    master.vm.network "private_network", ip: $ip_range + "#{$ip_start}"
+
+    # 规格配置
+    master.vm.provider :virtualbox do |vbox|
+      vbox.name    = $master_host
+      vbox.cpus    = $master_cpus
+      vbox.memory  = $master_memory
+    end
+
+    # 插件
+    # config.vagrant.plugins = ["vagrant-vbguest"] 
+    # config.vbguest.auto_update = false
+    # config.vbguest.no_remote = true
+
+    # kubeadmin 安装控制平面
+    master.vm.provision "shell" do |script|
+      script.path = "kubeadm-init.sh"
+      script.args = [ $master_ip, $k8s_token, $net_iface, $pod_subnet, $kube_version ]
+    end
+
+  end
+  # ===== 主节点配置 END =====
+
+  # ===== worker节点配置 =====
+  (1..$worker_count).each do |i|
+
+    host_name = $worker_host + "#{i}"
+
+    config.vm.define "#{host_name}" do |worker|
+      worker.vm.hostname = "#{host_name}"
+      worker.vm.network "private_network", ip: $ip_range + "#{$ip_start+i}"
+
+      # 规格配置
+      worker.vm.provider :virtualbox do |vbox|
+        vbox.name    = "#{host_name}"
+        vbox.cpus    = $worker_cpus
+        vbox.memory  = $worker_memory
+      end
+
+      # 加入node节点
+      worker.vm.provision "shell" do |script|
+        script.inline = <<-SHELL
+            kubeadm join $1:6443 --token $2 --discovery-token-unsafe-skip-ca-verification
+          SHELL
+        script.args = [ $master_ip, $k8s_token ]
+      end
+    end
+  end
+  # ===== worker节点配置 END =====
+
+end

@@ -22,7 +22,7 @@ cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 chown $(id -u):$(id -g) $HOME/.kube/config
 
 echo "[kubectl] Deploy Calico network"
-curl -fsSL https://gitee.com/jeff-qiu/k8s-2hours/raw/master/vagrant-all/vagrant-k8s/calico-3.24.5.yaml -o calico.yaml
+curl -fsSL https://github.com/googoo-s/vagrant_env_man/blob/master/kubernetes/calico-3.24.5.yaml -o calico.yaml
 # 将calico的pod网段设置为kubeadmin初始化的网段，否则网络会有问题
 sed -i '/CALICO_IPV4POOL_CIDR/,+1 s/# //' calico.yaml
 pod_cidr=$(echo $pod_subnet | sed 's/\//\\\//;s/\./\\\./g')

@@ -5,7 +5,10 @@ USER root
 # open port 22
 EXPOSE 22
 
+# set hadoop version
+ENV HADOOP_VERSION 3.3.1
 
+# update sources
 RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak
 
 # 添加阿里云源
@@ -18,18 +21,9 @@ RUN apt-get clean
 RUN apt-get autoremove -y 
 RUN apt upgrade -y
 
-# Uncomment these lines to install Oracle JDK instead of OpenJDK
-# RUN apt-get install -y software-properties-common
-# RUN add-apt-repository -y ppa:webupd8team/java
-# RUN apt-get update
-# RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
-# RUN apt-get install -y oracle-java8-installer
-
 # OpenJDK installation
 RUN apt-get install -y openjdk-8-jre openjdk-8-jdk openssh-server vim
-# Python3 to be used by Pyspark
-# RUN apt-get install -y python3 python3-pip python-is-python3
-ENV HADDOP_VERSION 3.3.1
+
 # add hadoop user
 RUN useradd -m -s /bin/bash hadoop
 
@@ -48,7 +42,6 @@ RUN cat /home/hadoop/.ssh/id_rsa.pub >> /home/hadoop/.ssh/authorized_keys
 RUN chown hadoop -R /home/hadoop/.ssh
 
 # get sources
-ENV HADOOP_VERSION 3.3.1
 RUN wget http://mirrors.aliyun.com/apache/hadoop/core/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz -P /home/hadoop/
 RUN tar -xzf /home/hadoop/hadoop-$HADOOP_VERSION.tar.gz -C /home/hadoop/
 RUN mv /home/hadoop/hadoop-$HADOOP_VERSION /home/hadoop/hadoop

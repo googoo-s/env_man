@@ -1,4 +1,4 @@
-FROM googoo-s/hadoop_cluster:hive
+FROM googoo-s/hadoop_cluster_hive
 
 USER root
 

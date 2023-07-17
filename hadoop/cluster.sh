@@ -55,8 +55,8 @@ function startServices {
   # echo ">> Starting Nifi Server ..."
   # docker exec -u hadoop -d nifi /home/hadoop/nifi/bin/nifi.sh start
   # echo ">> Starting kafka & Zookeeper ..."
-  docker exec -u hadoop -d edge /home/hadoop/kafka/bin/zookeeper-server-start.sh -daemon  /home/hadoop/kafka/config/zookeeper.properties
-  docker exec -u hadoop -d edge /home/hadoop/kafka/bin/kafka-server-start.sh -daemon  /home/hadoop/kafka/config/server.properties
+  docker exec -u hadoop -d kafka /home/hadoop/kafka/bin/zookeeper-server-start.sh -daemon  /home/hadoop/kafka/config/zookeeper.properties
+  docker exec -u hadoop -d kafka /home/hadoop/kafka/bin/kafka-server-start.sh -daemon  /home/hadoop/kafka/config/server.properties
   
   echo "Hadoop info @ nodemaster: http://172.20.1.1:8088/cluster"
   echo "DFS Health @ nodemaster : http://172.20.1.1:50070/dfshealth"
@@ -64,8 +64,8 @@ function startServices {
   echo "Spark info @ nodemaster  : http://172.20.1.1:8080"
   echo "Spark History Server @ nodemaster : http://172.20.1.1:18080"
   echo "Zookeeper @ hbase : http://172.20.1.9:2181"
-  # echo "Kafka @ edge : http://172.20.1.5:9092"
-  # echo "Nifi @ edge : http://172.20.1.5:8080/nifi & from host @ http://localhost:8080/nifi"
+  # echo "Kafka @ kafka : http://172.20.1.5:9092"
+  # echo "Nifi @ kafka : http://172.20.1.5:8080/nifi & from host @ http://localhost:8080/nifi"
   echo "HBASE @ hbase : http://172.20.1.9:16010 & from host @ http://localhost:16010"
 }
 
@@ -78,8 +78,8 @@ function stopServices {
   # docker exec -u hadoop -d nifi /home/hadoop/nifi/bin/nifi.sh stop
   # docker exec -u hadoop -d zeppelin /home/hadoop/zeppelin/bin/zeppelin-daemon.sh stop
   echo ">> Stopping containers ..."
-  # docker stop nodemaster node2 node3 edge hue nifi zeppelin psqlhms
-  docker stop nodemaster node2 node3 psqlhms hbase edge
+  # docker stop nodemaster node2 node3 kafka hue nifi zeppelin psqlhms
+  docker stop nodemaster node2 node3 psqlhms hbase kafka
 }
 
 if [[ $1 = "install" ]]; then
@@ -87,17 +87,17 @@ if [[ $1 = "install" ]]; then
 
   # Starting Postresql Hive metastore
   echo ">> Starting postgresql hive metastore ..."
-  docker run -d --net hadoopnet --ip 172.20.1.4 --hostname psqlhms --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host hbase:172.20.1.9 --name psqlhms -e POSTGRES_PASSWORD=hive -it googoo-s/hadoop_cluster:postgresql-hms
+  docker run -d --net hadoopnet --ip 172.20.1.4 --hostname psqlhms --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host hbase:172.20.1.9 --name psqlhms -e POSTGRES_PASSWORD=hive -it googoo-s/hadoop_cluster_postgresql-hms
   sleep 5
   
   # 3 nodes
   echo ">> Starting master and worker nodes ..."
-  docker run -d --net hadoopnet --ip 172.20.1.1 -p 4040:4040 -p 8088:8088 -p 50070:50070 -p 8080:8080 -p 18080:18080 --hostname nodemaster --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host hbase:172.20.1.9 --name nodemaster -it googoo-s/hadoop_cluster:hive
-  docker run -d --net hadoopnet --ip 172.20.1.2 --hostname node2 --add-host nodemaster:172.20.1.1 --add-host node3:172.20.1.3 --add-host hbase:172.20.1.9 --name node2 -it googoo-s/hadoop_cluster:spark
-  docker run -d --net hadoopnet --ip 172.20.1.3 --hostname node3 --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host hbase:172.20.1.9 --name node3 -it googoo-s/hadoop_cluster:spark
-  docker run -d --net hadoopnet --ip 172.20.1.5 --hostname edge --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --add-host hbase:172.20.1.9 --name edge -it googoo-s/hadoop_cluster:edge 
-  docker run -d --net hadoopnet --ip 172.20.1.9 -p 16010:16010 --hostname hbase --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --add-host hbase:172.20.1.9 --name hbase -it googoo-s/hadoop_cluster:hbase 
-  #docker run -d --net hadoopnet --ip 172.20.1.7  -p 8888:8888 --hostname huenode --add-host edge:172.20.1.5 --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --name hue -it googoo-s/hadoop_cluster:hue
+  docker run -d --net hadoopnet --ip 172.20.1.1 -p 4040:4040 -p 8088:8088 -p 50070:50070 -p 8080:8080 -p 18080:18080 --hostname nodemaster --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host hbase:172.20.1.9 --name nodemaster -it googoo-s/hadoop_cluster_hive
+  docker run -d --net hadoopnet --ip 172.20.1.2 --hostname node2 --add-host nodemaster:172.20.1.1 --add-host node3:172.20.1.3 --add-host hbase:172.20.1.9 --name node2 -it googoo-s/hadoop_cluster_spark
+  docker run -d --net hadoopnet --ip 172.20.1.3 --hostname node3 --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host hbase:172.20.1.9 --name node3 -it googoo-s/hadoop_cluster_spark
+  docker run -d --net hadoopnet --ip 172.20.1.5 --hostname kafka --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --add-host hbase:172.20.1.9 --name kafka -it googoo-s/hadoop_cluster_kafka 
+  docker run -d --net hadoopnet --ip 172.20.1.9 -p 16010:16010 --hostname hbase --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --add-host hbase:172.20.1.9 --name hbase -it googoo-s/hadoop_cluster_hbase 
+  #docker run -d --net hadoopnet --ip 172.20.1.7  -p 8888:8888 --hostname huenode --add-host kafka:172.20.1.5 --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --name hue -it googoo-s/hadoop_cluster_hue
   
   # Format nodemaster
   echo ">> Formatting hdfs ..."
@@ -117,13 +117,13 @@ if [[ $1 = "uninstall" ]]; then
   stopServices
   docker network rm hadoopnet
   docker ps -a | grep "googoo-s" | awk '{print $1}' | xargs docker rm
-  docker rmi googoo-s/hadoop_cluster:hadoop googoo-s/hadoop_cluster:spark googoo-s/hadoop_cluster:hive googoo-s/hadoop_cluster:postgresql-hms googoo-s/hadoop_cluster:hue googoo-s/hadoop_cluster:edge googoo-s/hadoop_cluster:hbase -f
+  docker rmi googoo-s/hadoop_cluster_hadoop googoo-s/hadoop_cluster_spark googoo-s/hadoop_cluster_hive googoo-s/hadoop_cluster_postgresql-hms googoo-s/hadoop_cluster_hue googoo-s/hadoop_cluster_kafka googoo-s/hadoop_cluster_hbase -f
   exit
 fi
 
 if [[ $1 = "start" ]]; then  
-  docker start psqlhms nodemaster node2 node3 hbase edge
-# docker start psqlhms nodemaster node2 node3 edge hue nifi zeppelin
+  docker start psqlhms nodemaster node2 node3 hbase kafka
+# docker start psqlhms nodemaster node2 node3 kafka hue nifi zeppelin
   startServices
   exit
 fi

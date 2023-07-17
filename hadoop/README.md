@@ -3,7 +3,7 @@
 
 Thanks to **Aditya Pal** - I forked his original project/repo (https://github.com/googoo-s/dockers). For this setup, considerable changes were done to make it work/integrate, having a development/lab Hadoop platform for testing purposes with udpdated compnents.
 
-This project in the original repo has 1 master, 2 workers, 1 edge node (with Flume, Sqoop and Kafka !!) , 1 Hue service node, 1 Zeppelin service node and 1 Nifi node.
+This project in the original repo has 1 master, 2 workers, 1 kafka node (with Flume, Sqoop and Kafka !!) , 1 Hue service node, 1 Zeppelin service node and 1 Nifi node.
 
 **PS** -> HBASE was added in the platform. Nifi, Hue and Zeppelin were disabled to consume less resources.
 
@@ -22,7 +22,7 @@ This project in the original repo has 1 master, 2 workers, 1 edge node (with Flu
 * [Spark 3.1.2](https://spark.apache.org/docs/3.1.2/) in SPARK MASTER mode (Spark Scala, and PySpark) - You can trigger a job also as YARN giving more resources (CPU, MEMORY)
 * [Hbase 2.4.15](https://hbase.apache.org/)  in Pseudo Distributed Mode on top of HDFS
 
-Also there is available an EDGE node to run conde/scripts
+Also there is available an kafka node to run conde/scripts
 
 > If you have more resources to run the containers, you can run Spark over YARN, as Defalut, Spark is running with Spark Master (1 Master, 3 workers). Just need to change Spark configuration file.
 

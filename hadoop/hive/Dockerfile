@@ -1,4 +1,4 @@
-FROM googoo-s/hadoop_cluster:spark
+FROM googoo-s/hadoop_cluster_spark
 
 USER root
 

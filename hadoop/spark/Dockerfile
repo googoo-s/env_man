@@ -1,32 +1,21 @@
-FROM googoo-s/hadoop_cluster:hadoop
-
+FROM googoo-s/hadoop_cluster_hadoop
 
 USER root
-
-# installing python for pyspark
-# change python version as per your requirement 
-#RUN apt-get update && apt-get install -y python3 python3-pip python-is-python3
-# 添加阿里云源
-RUN echo "deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse" > /etc/apt/sources.list
-RUN echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse" >> /etc/apt/sources.list
-RUN echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse" >> /etc/apt/sources.list
-RUN echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse" >> /etc/apt/sources.list
-RUN apt-get update 
-RUN apt-get clean 
-RUN apt-get autoremove -y 
-RUN apt upgrade -y
-
-# RUN apt install -y python3-software-properties=0.96.24.32.22
-# RUN apt-get install -y software-properties-common
-# RUN add-apt-repository ppa:deadsnakes/ppa
-RUN apt-get install -y python3.7
 
 ENV SCALA_VERSION 2.12.12
 ENV SPARK_VERSION 3.2.4
 
+# installing python for pyspark
+# change python version as per your requirement 
+#RUN apt-get update && apt-get install -y python3 python3-pip python-is-python3
+# RUN apt install -y python3-software-properties=0.96.24.32.22
+# RUN apt-get install -y software-properties-common
+# RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt-get install -y python3.7 python3-pip 
+
 # get sources
 
-#SCALA Source
+# SCALA Source
 RUN mkdir /usr/share/scala
 RUN wget https://downloads.lightbend.com/scala/$SCALA_VERSION/scala-$SCALA_VERSION.tgz -P /tmp/
 RUN tar -xzf /tmp/scala-$SCALA_VERSION.tgz -C /tmp/
@@ -42,10 +31,6 @@ RUN cp /usr/share/scala/bin/* /usr/bin/
 #                 && apt-get install -y sbt scala
 
 # SPARK Sources
-# RUN wget https://archive.apache.org/dist/spark/spark-$SPARK_VERSION/spark-$SPARK_VERSION-bin-without-hadoop.tgz -P /home/hadoop/
-# RUN tar -xzf /home/hadoop/spark-$SPARK_VERSION-bin-without-hadoop.tgz -C /home/hadoop/
-# RUN mv /home/hadoop/spark-$SPARK_VERSION-bin-without-hadoop /home/hadoop/spark
-# RUN rm /home/hadoop/spark-$SPARK_VERSION-bin-without-hadoop.tgz
 # hadoop pre built package
 RUN wget http://mirrors.aliyun.com/apache/spark/spark-$SPARK_VERSION/spark-$SPARK_VERSION-bin-hadoop3.2.tgz -P /home/hadoop/
 RUN tar -xzf /home/hadoop/spark-$SPARK_VERSION-bin-hadoop3.2.tgz -C /home/hadoop/
@@ -77,7 +62,7 @@ RUN echo "spark.history.fs.logDirectory file:/home/hadoop/spark/logs" >> /home/h
 RUN echo "spark.master spark://nodemaster:7077" >> /home/hadoop/spark/conf/spark-defaults.conf
 RUN echo "spark.sql.catalogImplementation hive" >> /home/hadoop/spark/conf/spark-defaults.conf
 RUN echo "spark.yarn.jars hdfs://nodemaster:9000/spark-jars/*" >> /home/hadoop/spark/conf/spark-defaults.conf
-#RUN echo "spark.sql.hive.metastore.version 2.3.0" >> /home/hadoop/spark/conf/spark-defaults.conf
+#RUN echo "spark.sql.hive.metastore.version 2.3.9" >> /home/hadoop/spark/conf/spark-defaults.conf
 #RUN echo "spark.sql.hive.metastore.jars $(hadoop classpath)" >> /home/hadoop/spark/conf/spark-defaults.conf
 ADD configs/hbase-site.xml /home/hadoop/spark/conf/
 ADD configs/hive-site.xml /home/hadoop/spark/conf/

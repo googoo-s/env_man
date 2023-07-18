@@ -31,8 +31,8 @@ RUN echo "PubkeyAcceptedKeyTypes +ssh-dss" >> /home/hadoop/.ssh/config
 RUN echo "PasswordAuthentication no" >> /home/hadoop/.ssh/config
 
 # copy keys
-ADD configs/id_rsa.pub /home/hadoop/.ssh/id_rsa.pub
-ADD configs/id_rsa /home/hadoop/.ssh/id_rsa
+COPY configs/id_rsa.pub /home/hadoop/.ssh/id_rsa.pub
+COPY configs/id_rsa /home/hadoop/.ssh/id_rsa
 RUN chmod 400 /home/hadoop/.ssh/id_rsa
 RUN chmod 400 /home/hadoop/.ssh/id_rsa.pub
 RUN cat /home/hadoop/.ssh/id_rsa.pub >> /home/hadoop/.ssh/authorized_keys
@@ -49,7 +49,7 @@ RUN echo -e "\n" >> /home/hadoop/nifi/bin/nifi-env.sh
 RUN echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" >> /home/hadoop/nifi/bin/nifi-env.sh
 RUN echo "export TOOLS_JAR=${JAVA_HOME}/lib/tools.jar" >> /home/hadoop/nifi/bin/nifi-env.sh
 
-ADD configs/nifi.properties /home/hadoop/nifi/conf/nifi.properties
+COPY configs/nifi.properties /home/hadoop/nifi/conf/nifi.properties
 RUN chown hadoop -R /home/hadoop/nifi
 
 CMD service ssh start && bash

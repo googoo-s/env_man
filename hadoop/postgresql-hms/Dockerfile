@@ -5,7 +5,7 @@ USER root
 ENV HIVE_VERSION 2.3.9
 
 RUN export LANGUAGE=en_US.UTF-8
-ADD configs/hive-schema-$HIVE_VERSION.postgres.sql /hive/hive-schema-$HIVE_VERSION.postgres.sql
-ADD configs/hive-txn-schema-$HIVE_VERSION.postgres.sql /hive/hive-txn-schema-$HIVE_VERSION.postgres.sql
+COPY configs/hive-schema-$HIVE_VERSION.postgres.sql /hive/hive-schema-$HIVE_VERSION.postgres.sql
+COPY configs/hive-txn-schema-$HIVE_VERSION.postgres.sql /hive/hive-txn-schema-$HIVE_VERSION.postgres.sql
 
 COPY configs/init-hive-db.sh /docker-entrypoint-initdb.d/init-user-db.sh

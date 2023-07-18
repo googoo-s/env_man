@@ -28,7 +28,7 @@ ENV HIVE_HOME /home/hadoop/hive
 ENV PATH $HIVE_HOME/bin:$PATH
 
 RUN cp /usr/share/java/postgresql-jdbc4.jar /home/hadoop/hive/lib/
-ADD configs/hive-site.xml $HIVE_HOME/conf/hive-site.xml
+COPY configs/hive-site.xml $HIVE_HOME/conf/hive-site.xml
 RUN echo "export HADOOP_HOME=/home/hadoop/hadoop" >> /home/hadoop/hive/bin/hive-config.sh
 RUN mkdir -p $HIVE_HOME/hcatalog/var/log
 RUN mkdir -p $HIVE_HOME/var/log

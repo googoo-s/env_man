@@ -22,15 +22,15 @@ RUN echo "export HBASE_HOME=/home/hadoop/hbase" >> $HBASE_HOME/conf/hbase-env.sh
 RUN echo "export HBASE_REGIONSERVERS=/home/hadoop/hbase/conf/regionservers" >> $HBASE_HOME/conf/hbase-env.sh
 RUN echo "export HBASE_MANAGES_ZK=true" >> $HBASE_HOME/conf/hbase-env.sh
 RUN echo "export HBASE_DISABLE_HADOOP_CLASSPATH_LOOKUP=true" >> $HBASE_HOME/conf/hbase-env.sh
-ADD configs/hbase-site.xml $HBASE_HOME/conf/hbase-site.xml
-ADD configs/hbase-thrift-start.sh $HBASE_HOME/hbase-thrift-start.sh
+COPY configs/hbase-site.xml $HBASE_HOME/conf/hbase-site.xml
+COPY configs/hbase-thrift-start.sh $HBASE_HOME/hbase-thrift-start.sh
 
 # copy keys
-ADD configs/id_rsa.pub /home/hadoop/.ssh/id_rsa.pub
-ADD configs/id_rsa /home/hadoop/.ssh/id_rsa
-ADD configs/hbase-keyscan.sh /home/hadoop/
-ADD configs/hbase-thrift-start.sh /home/hadoop/
-ADD configs/py-base-test-2.py /home/hadoop/hbase
+COPY configs/id_rsa.pub /home/hadoop/.ssh/id_rsa.pub
+COPY configs/id_rsa /home/hadoop/.ssh/id_rsa
+COPY configs/hbase-keyscan.sh /home/hadoop/
+COPY configs/hbase-thrift-start.sh /home/hadoop/
+COPY configs/py-base-test-2.py /home/hadoop/hbase
 RUN chmod +rx /home/hadoop/hbase-keyscan.sh
 RUN chmod 400 /home/hadoop/.ssh/id_rsa
 RUN chmod 400 /home/hadoop/.ssh/id_rsa.pub

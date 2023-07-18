@@ -64,10 +64,10 @@ RUN echo "spark.sql.catalogImplementation hive" >> /home/hadoop/spark/conf/spark
 RUN echo "spark.yarn.jars hdfs://nodemaster:9000/spark-jars/*" >> /home/hadoop/spark/conf/spark-defaults.conf
 #RUN echo "spark.sql.hive.metastore.version 2.3.9" >> /home/hadoop/spark/conf/spark-defaults.conf
 #RUN echo "spark.sql.hive.metastore.jars $(hadoop classpath)" >> /home/hadoop/spark/conf/spark-defaults.conf
-ADD configs/hbase-site.xml /home/hadoop/spark/conf/
-ADD configs/hive-site.xml /home/hadoop/spark/conf/
-ADD configs/core-site.xml /home/hadoop/spark/conf/
-ADD configs/hdfs-site.xml /home/hadoop/spark/conf/
-ADD configs/yarn-site.xml /home/hadoop/spark/conf/
-ADD configs/workers /home/hadoop/spark/conf/slaves
+COPY configs/hbase-site.xml /home/hadoop/spark/conf/
+COPY configs/hive-site.xml /home/hadoop/spark/conf/
+COPY configs/core-site.xml /home/hadoop/spark/conf/
+COPY configs/hdfs-site.xml /home/hadoop/spark/conf/
+COPY configs/yarn-site.xml /home/hadoop/spark/conf/
+COPY configs/workers /home/hadoop/spark/conf/slaves
 RUN chown hadoop -R /home/hadoop/spark

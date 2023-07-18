@@ -34,8 +34,8 @@ RUN echo "PubkeyAcceptedKeyTypes +ssh-dss" >> /home/hadoop/.ssh/config
 RUN echo "PasswordAuthentication no" >> /home/hadoop/.ssh/config
 
 # copy keys
-ADD configs/id_rsa.pub /home/hadoop/.ssh/id_rsa.pub
-ADD configs/id_rsa /home/hadoop/.ssh/id_rsa
+COPY configs/id_rsa.pub /home/hadoop/.ssh/id_rsa.pub
+COPY configs/id_rsa /home/hadoop/.ssh/id_rsa
 RUN chmod 400 /home/hadoop/.ssh/id_rsa
 RUN chmod 400 /home/hadoop/.ssh/id_rsa.pub
 RUN cat /home/hadoop/.ssh/id_rsa.pub >> /home/hadoop/.ssh/authorized_keys
@@ -70,12 +70,12 @@ RUN echo "export HDFS_SECONDARYNAMENODE_USER=hadoop" >> /home/hadoop/hadoop/etc/
 # create folders for nodes
 RUN mkdir -p /home/hadoop/data/nameNode /home/hadoop/data/dataNode /home/hadoop/data/nameNodeSecondary /home/hadoop/data/tmp
 RUN mkdir -p /home/hadoop/hadoop/logs
-ADD configs/core-site.xml $HADOOP_HOME/etc/hadoop/core-site.xml
-ADD configs/hdfs-site.xml $HADOOP_HOME/etc/hadoop/hdfs-site.xml
-ADD configs/mapred-site.xml $HADOOP_HOME/etc/hadoop/mapred-site.xml
-ADD configs/yarn-site.xml $HADOOP_HOME/etc/hadoop/yarn-site.xml
-ADD configs/hive-site.xml $HADOOP_HOME/etc/hadoop/hive-site.xml
-ADD configs/workers $HADOOP_HOME/etc/hadoop/workers
+COPY configs/core-site.xml $HADOOP_HOME/etc/hadoop/core-site.xml
+COPY configs/hdfs-site.xml $HADOOP_HOME/etc/hadoop/hdfs-site.xml
+COPY configs/mapred-site.xml $HADOOP_HOME/etc/hadoop/mapred-site.xml
+COPY configs/yarn-site.xml $HADOOP_HOME/etc/hadoop/yarn-site.xml
+COPY configs/hive-site.xml $HADOOP_HOME/etc/hadoop/hive-site.xml
+COPY configs/workers $HADOOP_HOME/etc/hadoop/workers
 
 # permissions
 RUN chown hadoop -R /home/hadoop/data

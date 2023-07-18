@@ -2,8 +2,7 @@ FROM ubuntu:20.04
 
 USER root
 
-# open port 22
-EXPOSE 22
+
 
 RUN echo "deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse" > /etc/apt/sources.list
 RUN echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse" >> /etc/apt/sources.list
@@ -52,5 +51,7 @@ RUN echo "export TOOLS_JAR=${JAVA_HOME}/lib/tools.jar" >> /home/hadoop/nifi/bin/
 COPY configs/nifi.properties /home/hadoop/nifi/conf/nifi.properties
 RUN chown hadoop -R /home/hadoop/nifi
 
-CMD service ssh start && bash
-
+# open port 22
+RUN mkdir -p /run/sshd
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"] 

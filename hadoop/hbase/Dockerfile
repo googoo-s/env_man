@@ -44,4 +44,7 @@ RUN chown hadoop -R /home/hadoop/zookeeper*
 
 RUN chown hadoop -R /home/hadoop/hbase
 
-CMD service ssh start && bash
+RUN mkdir -p /run/sshd
+# open port 22
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"] 

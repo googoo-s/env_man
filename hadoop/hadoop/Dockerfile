@@ -2,9 +2,6 @@ FROM ubuntu:20.04
 
 USER root
 
-# open port 22
-EXPOSE 22
-
 # set hadoop version
 ENV HADOOP_VERSION 3.3.1
 
@@ -81,4 +78,7 @@ COPY configs/workers $HADOOP_HOME/etc/hadoop/workers
 RUN chown hadoop -R /home/hadoop/data
 RUN chown hadoop -R /home/hadoop/hadoop
 
-CMD service ssh start && bash
+RUN mkdir -p /run/sshd
+# open port 22
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"] 

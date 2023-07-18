@@ -71,3 +71,8 @@ COPY configs/hdfs-site.xml /home/hadoop/spark/conf/
 COPY configs/yarn-site.xml /home/hadoop/spark/conf/
 COPY configs/workers /home/hadoop/spark/conf/slaves
 RUN chown hadoop -R /home/hadoop/spark
+
+RUN mkdir -p /run/sshd
+# open port 22
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"] 

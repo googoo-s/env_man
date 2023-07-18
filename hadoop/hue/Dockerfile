@@ -11,3 +11,8 @@ RUN mkdir -p /etc/hive/conf
 ENV HIVE_CONF_DIR /etc/hive/conf
 
 COPY configs/hive-site.xml $HIVE_CONF_DIR/hive-site.xml
+
+RUN mkdir -p /run/sshd
+# open port 22
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"] 

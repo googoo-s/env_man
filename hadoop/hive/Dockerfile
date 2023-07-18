@@ -34,3 +34,8 @@ RUN mkdir -p $HIVE_HOME/hcatalog/var/log
 RUN mkdir -p $HIVE_HOME/var/log
 RUN chown hadoop -R /home/hadoop/hive
 RUN export LANGUAGE=en_US.UTF-8
+
+RUN mkdir -p /run/sshd
+# open port 22
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"] 

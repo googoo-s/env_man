@@ -13,5 +13,7 @@ ENV KAFKA_HOME=/home/hadoop/kafka
 ENV PATH $KAFKA_HOME/bin:$PATH
 COPY configs/py-base-test-2.py $HADOOP_HOME/
 
-CMD service ssh start && bash
-
+RUN mkdir -p /run/sshd
+# open port 22
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"] 

@@ -1,0 +1,77 @@
+version: "3"
+
+networks:
+  hadoopnet:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 172.20.0.0/16
+         
+services:
+  psqlhms:
+    container_name: psqlhms
+    image: googoo-s/hadoop_cluster_postgresql-hms
+    hostname: psqlhms
+    mem_limit: 4g
+    environment:
+      - POSTGRES_PASSWORD=hive 
+    networks:
+      - hadoopnet
+
+  nodemaster:
+    container_name: nodemaster
+    image: googoo-s/hadoop_cluster_hive
+    hostname: nodemaster
+    mem_limit: 4g
+    depends_on:
+      - psqlhms
+    ports:
+      - "4040:4040"
+      - "8088:8088"  
+      - "50070:50070"
+      - "8080:8080"
+      - "18080:18080" 
+    networks:
+      - hadoopnet
+    
+  node2:
+    container_name: node2
+    image: googoo-s/hadoop_cluster_spark  
+    hostname: node2
+    mem_limit: 4g
+    depends_on:
+      - nodemaster
+    networks:
+      - hadoopnet
+
+  node3:  
+    container_name: node3
+    image: googoo-s/hadoop_cluster_spark
+    hostname: node3
+    mem_limit: 4g
+    depends_on:
+      - nodemaster
+    networks:
+      - hadoopnet
+
+  kafka:
+    container_name: kafka
+    image: googoo-s/hadoop_cluster_kafka
+    mem_limit: 4g
+    hostname: kafka
+    networks:
+      - hadoopnet
+
+  hbase:
+    container_name: hbase
+    image: googoo-s/hadoop_cluster_hbase
+    hostname: hbase 
+    mem_limit: 4g 
+    depends_on:
+      - nodemaster
+    ports:
+      - "16010:16010" 
+    networks:
+      - hadoopnet
+
+   
